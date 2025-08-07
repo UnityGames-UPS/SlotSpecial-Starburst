@@ -1,0 +1,309 @@
+fileFormatVersion: 2
+guid: a8a7d5045380a48b5a021fc926690ddf
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Untitled_Artwork_2
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 589
+        width: 472
+        height: 472
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1434783ff93cc4c848c1b5489c40df02
+      internalID: -598357985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Untitled_Artwork_3
+      rect:
+        serializedVersion: 2
+        x: 1265
+        y: 590
+        width: 472
+        height: 472
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50e6a4be43e0849269f02f83962c3eb3
+      internalID: 334674642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Untitled_Artwork_0
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 359
+        width: 1364
+        height: 159
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d0f555374fd7496aba8664a0d014042
+      internalID: -1786855720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Untitled_Artwork_1
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 89
+        width: 1245
+        height: 159
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c052f325d554e48209be22aa63405a86
+      internalID: 979727503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Untitled_Artwork_0: -1786855720
+      Untitled_Artwork_1: 979727503
+      Untitled_Artwork_10: -1223864534
+      Untitled_Artwork_11: -1694860560
+      Untitled_Artwork_12: -1725715040
+      Untitled_Artwork_13: -1512982348
+      Untitled_Artwork_14: -562153316
+      Untitled_Artwork_15: -2114611425
+      Untitled_Artwork_16: -1269302636
+      Untitled_Artwork_17: 706169573
+      Untitled_Artwork_18: -1858050443
+      Untitled_Artwork_19: -1392941210
+      Untitled_Artwork_2: -598357985
+      Untitled_Artwork_20: 172958126
+      Untitled_Artwork_21: -488254185
+      Untitled_Artwork_22: 1389933727
+      Untitled_Artwork_23: -397177851
+      Untitled_Artwork_24: 541848912
+      Untitled_Artwork_25: -1991708147
+      Untitled_Artwork_26: -1833831963
+      Untitled_Artwork_27: -282571370
+      Untitled_Artwork_28: -906487274
+      Untitled_Artwork_29: 469703981
+      Untitled_Artwork_3: 334674642
+      Untitled_Artwork_30: -1676861620
+      Untitled_Artwork_31: -1539479399
+      Untitled_Artwork_32: -1900426827
+      Untitled_Artwork_33: -1269734741
+      Untitled_Artwork_34: -850907841
+      Untitled_Artwork_35: 78403397
+      Untitled_Artwork_36: 606183894
+      Untitled_Artwork_37: -938115921
+      Untitled_Artwork_38: 863719069
+      Untitled_Artwork_39: -1742995442
+      Untitled_Artwork_4: 636943409
+      Untitled_Artwork_40: 654131942
+      Untitled_Artwork_41: -138925936
+      Untitled_Artwork_42: -208423571
+      Untitled_Artwork_43: 194249806
+      Untitled_Artwork_44: 1273531300
+      Untitled_Artwork_45: 1214366603
+      Untitled_Artwork_46: 130873506
+      Untitled_Artwork_47: -557956821
+      Untitled_Artwork_48: -275770161
+      Untitled_Artwork_49: -103211076
+      Untitled_Artwork_5: -705875750
+      Untitled_Artwork_50: 179994968
+      Untitled_Artwork_51: 1817192406
+      Untitled_Artwork_52: 225496082
+      Untitled_Artwork_53: 40127841
+      Untitled_Artwork_54: -2131625473
+      Untitled_Artwork_55: -1905614377
+      Untitled_Artwork_56: -1920225529
+      Untitled_Artwork_57: 43648577
+      Untitled_Artwork_58: -336581406
+      Untitled_Artwork_59: 1916866791
+      Untitled_Artwork_6: 2124497482
+      Untitled_Artwork_60: 2020745389
+      Untitled_Artwork_61: 1912364165
+      Untitled_Artwork_62: -1802222136
+      Untitled_Artwork_63: -1004880588
+      Untitled_Artwork_64: 1385214994
+      Untitled_Artwork_65: -1702206892
+      Untitled_Artwork_66: 1126809899
+      Untitled_Artwork_67: -658266877
+      Untitled_Artwork_68: -931975488
+      Untitled_Artwork_69: -2112654418
+      Untitled_Artwork_7: 379634116
+      Untitled_Artwork_70: -860451455
+      Untitled_Artwork_71: 2098121030
+      Untitled_Artwork_8: 472028373
+      Untitled_Artwork_9: 717843082
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

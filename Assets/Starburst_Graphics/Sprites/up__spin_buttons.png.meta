@@ -1,0 +1,285 @@
+fileFormatVersion: 2
+guid: f92c17a426dc4476cb10608e8427bfc8
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: up  spin buttons_1
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 3901
+        width: 1043
+        height: 1042
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf063a53ca2044c6f996aef75cdc8aad
+      internalID: 535454093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: up  spin buttons_15
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 2651
+        width: 1043
+        height: 1056
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ac0096679609457194f205871e0b95a
+      internalID: 1569103209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: up  spin buttons_29
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 1401
+        width: 1042
+        height: 1046
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7dd260542ce7b4c409c31803bce6c71d
+      internalID: 1358624394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: up  spin buttons_39
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 150
+        width: 1042
+        height: 1056
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37c0b429dab2046ac95405463a27973b
+      internalID: 310888181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      up  spin buttons_0: 1658957423
+      up  spin buttons_1: 535454093
+      up  spin buttons_10: -683256569
+      up  spin buttons_11: 2137473247
+      up  spin buttons_12: -172044488
+      up  spin buttons_13: -1140594279
+      up  spin buttons_14: 554966283
+      up  spin buttons_15: 1569103209
+      up  spin buttons_16: 1236429954
+      up  spin buttons_17: 965956547
+      up  spin buttons_18: 1614023325
+      up  spin buttons_19: -1638465393
+      up  spin buttons_2: 101301911
+      up  spin buttons_20: 624898933
+      up  spin buttons_21: -518625273
+      up  spin buttons_22: -503799793
+      up  spin buttons_23: 1197662430
+      up  spin buttons_24: -432131572
+      up  spin buttons_25: -1885037089
+      up  spin buttons_26: -676955049
+      up  spin buttons_27: -682976238
+      up  spin buttons_28: -1869212365
+      up  spin buttons_29: 1358624394
+      up  spin buttons_3: -1839247227
+      up  spin buttons_30: 191197696
+      up  spin buttons_31: -1314671373
+      up  spin buttons_32: -415088255
+      up  spin buttons_33: 867521678
+      up  spin buttons_34: 1727486710
+      up  spin buttons_35: 1838978465
+      up  spin buttons_36: -744675244
+      up  spin buttons_37: -838872900
+      up  spin buttons_38: 2017305700
+      up  spin buttons_39: 310888181
+      up  spin buttons_4: 116524618
+      up  spin buttons_40: -1816684631
+      up  spin buttons_41: -474219667
+      up  spin buttons_42: -1592494352
+      up  spin buttons_43: 1221513236
+      up  spin buttons_44: 1916852384
+      up  spin buttons_45: -1065045394
+      up  spin buttons_46: 882957158
+      up  spin buttons_47: -988520882
+      up  spin buttons_5: 15222482
+      up  spin buttons_6: 448123039
+      up  spin buttons_7: 1342883538
+      up  spin buttons_8: -1634836835
+      up  spin buttons_9: -637867019
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
