@@ -6018,6 +6018,8 @@ MonoBehaviour:
   targetImage: {fileID: 1326800795}
   audioController: {fileID: 1030743558465206379}
   slotManager: {fileID: 2046803210}
+  socketManager: {fileID: 500036492}
+  jsFunctCalls: {fileID: 2129569334}
 --- !u!1 &379481112
 GameObject:
   m_ObjectHideFlags: 0
@@ -8754,7 +8756,7 @@ MonoBehaviour:
   uiManager: {fileID: 377874625}
   RaycastBlocker: {fileID: 1843602287}
   bonusdata: []
-  testToken: 1f187176436e49d69e1a63896679f0bd
+  testToken: d776d3a909654da9850c2b4f15c0fd25
   JSManager: {fileID: 2129569334}
 --- !u!1 &501201621
 GameObject:

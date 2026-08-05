@@ -92,6 +92,7 @@ public class SlotBehaviour : MonoBehaviour
   private bool isStarBurst;
   private List<int> StarBurstColumns = new();
   private bool WasAutoSpinON = false;
+  private bool AutoSpinStopRequested = false;
   private bool StopSpinToggle;
   private float SpinDelay = 0.2f;
   private bool IsTurboOn;
@@ -178,7 +179,9 @@ public class SlotBehaviour : MonoBehaviour
     if (!IsAutoSpin)
     {
       IsAutoSpin = true;
+      AutoSpinStopRequested = false;
       if (AutoSpinStop_Button) AutoSpinStop_Button.gameObject.SetActive(true);
+      if (AutoSpinStop_Button) AutoSpinStop_Button.interactable = true;
       if (AutoSpin_Button) AutoSpin_Button.gameObject.SetActive(false);
 
       if (AutoSpinRoutine != null)
@@ -192,8 +195,12 @@ public class SlotBehaviour : MonoBehaviour
 
   private void StopAutoSpin()
   {
-    if (IsAutoSpin)
+    if ((IsAutoSpin || WasAutoSpinON) && !AutoSpinStopRequested)
     {
+      // Latch the request immediately: the spin in flight may still turn out to be a
+      // free spin trigger, and that path must not park autospin for a later resume.
+      AutoSpinStopRequested = true;
+      WasAutoSpinON = false;
       StartCoroutine(StopAutoSpinCoroutine());
     }
   }
@@ -211,20 +218,27 @@ public class SlotBehaviour : MonoBehaviour
   private IEnumerator StopAutoSpinCoroutine()
   {
     if (AutoSpinStop_Button) AutoSpinStop_Button.interactable = false;
-    yield return new WaitUntil(() => !IsSpinning);
+    // Also wait out any free spin sequence the current spin triggered - tearing down
+    // tweenroutine mid-sequence would strand the remaining free spins.
+    yield return new WaitUntil(() => !IsSpinning && !isStarBurst);
     ToggleButtonGrp(true);
-    if (AutoSpinRoutine != null || tweenroutine != null)
+    if (AutoSpinRoutine != null)
     {
       StopCoroutine(AutoSpinRoutine);
+      AutoSpinRoutine = null;
+    }
+    if (tweenroutine != null)
+    {
       StopCoroutine(tweenroutine);
       tweenroutine = null;
-      AutoSpinRoutine = null;
-      IsAutoSpin = false;
-      StopCoroutine(StopAutoSpinCoroutine());
     }
+    IsAutoSpin = false;
+    WasAutoSpinON = false;
+    AutoSpinStopRequested = false;
     if (AutoSpinStop_Button) AutoSpinStop_Button.gameObject.SetActive(false);
     if (AutoSpin_Button) AutoSpin_Button.gameObject.SetActive(true);
-    AutoSpinStop_Button.interactable = true;
+    if (AutoSpin_Button) AutoSpin_Button.interactable = true;
+    if (AutoSpinStop_Button) AutoSpinStop_Button.interactable = true;
   }
   #endregion
 
@@ -265,6 +279,15 @@ public class SlotBehaviour : MonoBehaviour
     WasAutoSpinON = false;
   }
   #endregion
+
+  // Backend-pushed balance correction — snap the display (not tweened, this isn't a win)
+  // and re-run the low-balance gate, since an external push can cross the bet threshold.
+  internal void UpdateBalanceDisplay(double newBalance)
+  {
+    currentBalance = newBalance;
+    if (Balance_text) Balance_text.text = newBalance.ToString("F3");
+    CompareBalance();
+  }
 
   private void CompareBalance()
   {
@@ -450,9 +473,11 @@ public class SlotBehaviour : MonoBehaviour
   }
   #endregion
 
+  // Native/editor focus path — calls the SAME mute method the WebGL OnFocusChanged path calls.
+  // Deliberately does NOT touch the socket background timeout; that stays exclusive to the JS path.
   private void OnApplicationFocus(bool focus)
   {
-    audioController.CheckFocusFunction(focus, CheckSpinAudio);
+    if (audioController) audioController.SetMuteAll(!focus);
   }
 
   //function to populate animation sprites accordingly
@@ -578,7 +603,8 @@ public class SlotBehaviour : MonoBehaviour
     {
       if (IsAutoSpin)
       {
-        WasAutoSpinON = true;
+        // Only park autospin for a resume if the player has not asked it to stop.
+        WasAutoSpinON = !AutoSpinStopRequested;
         IsAutoSpin = false;
         if (AutoSpinRoutine != null)
         {
@@ -817,13 +843,13 @@ public class SlotBehaviour : MonoBehaviour
         {
           if (!int.TryParse(Result[i][j], out int resultNum))
           {
-            Debug.LogError($"Failed to parse result number at position [{i}, {j}]: {Result[j][i]}");
+            Debug.LogError($"Failed to parse result number at position [{i}, {j}]: {Result[i][j]}");
             continue; // Skip this iteration if parsing fails
           }
-          if (ResultMatrix[i].slotImages[j] && !StarBurstColumns.Contains(i))
+          // i is the row, j is the column/reel - StarBurstColumns stores reel indices
+          if (ResultMatrix[i].slotImages[j] && !StarBurstColumns.Contains(j))
           {
             ResultMatrix[i].slotImages[j].sprite = myImages[resultNum];
-            string loc = i.ToString() + j.ToString();
             if (resultNum <= 4)
             {
               foreach (var winCoords in WinLineSymbolCoordinates)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AudioController : MonoBehaviour
@@ -8,6 +9,18 @@ public class AudioController : MonoBehaviour
     [SerializeField] internal AudioSource audioSpin_button;
     [SerializeField] private AudioClip[] clips;
 
+    private readonly List<AudioSource> allSources = new();
+    private readonly Dictionary<AudioSource, bool> preFocusMuteState = new();
+    private bool isForceMuted = false;
+
+    private void Awake()
+    {
+        allSources.Add(bg_adudio);
+        allSources.Add(audioPlayer_wl);
+        allSources.Add(audioPlayer_button);
+        allSources.Add(audioSpin_button);
+    }
+
     private void Start()
     {
         if (bg_adudio) bg_adudio.Play();
@@ -15,26 +28,26 @@ public class AudioController : MonoBehaviour
         audioSpin_button.clip = clips[clips.Length-2];
     }
 
-    internal void CheckFocusFunction(bool focus, bool IsSpinning)
+    // Focus-driven mute. Called from BOTH the JS OnFocusChanged path (UIManager) and the
+    // native OnApplicationFocus path (SlotBehaviour). Guarded so a duplicate call for the
+    // same direction cannot clobber the captured "restore to" state.
+    internal void SetMuteAll(bool forceMute)
     {
-        if (!focus)
+        if (forceMute == isForceMuted) return;
+        isForceMuted = forceMute;
+
+        foreach (AudioSource source in allSources)
         {
-            bg_adudio.Pause();
-            audioPlayer_wl.Pause();
-            audioPlayer_button.Pause();
-        }
-        else
-        {
-            if (!bg_adudio.mute) bg_adudio.UnPause();
-            if (IsSpinning)
+            if (source == null) continue;
+            if (forceMute)
             {
-                if (!audioPlayer_wl.mute) audioPlayer_wl.UnPause();
+                preFocusMuteState[source] = source.mute;
+                source.mute = true;
             }
             else
             {
-                StopWLAaudio();
+                source.mute = preFocusMuteState.TryGetValue(source, out bool prevMuted) ? prevMuted : source.mute;
             }
-            if (!audioPlayer_button.mute) audioPlayer_button.UnPause();
         }
     }
 
@@ -95,8 +108,13 @@ public class AudioController : MonoBehaviour
         audioPlayer_wl.loop = false;
     }
 
+    // User-toggle-driven (sound/music button). An explicit interaction proves the game really
+    // has focus, so it releases any stale forced-mute first — otherwise a stray unpaired blur
+    // signal would leave the button visibly doing nothing.
     internal void ToggleMute(bool toggle, string type)
     {
+        SetMuteAll(false);
+
         switch (type)
         {
             case "music":

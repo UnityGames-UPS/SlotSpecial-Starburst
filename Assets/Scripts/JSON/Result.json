@@ -1,0 +1,131 @@
+{
+  "success": true,
+  "matrix": [
+    [
+      "5",
+      "7",
+      "3",
+      "2",
+      "3"
+    ],
+    [
+      "0",
+      "2",
+      "1",
+      "5",
+      "0"
+    ],
+    [
+      "2",
+      "2",
+      "1",
+      "0",
+      "1"
+    ]
+  ],
+  "id": "ResultData",
+  "payload": {
+    "winAmount": 0,
+    "wins": []
+  },
+  "features": {
+    "freeSpin": {
+      "isFreeSpin": true,
+      "count": 1
+    },
+    "totalWinAmount": "0.150",
+    "starBurstFreeSpins": [
+      {
+        "success": true,
+        "player": {
+          "balance": 359.03999999999996
+        },
+        "matrix": [
+          [
+            "5",
+            "7",
+            "3",
+            "2",
+            "3"
+          ],
+          [
+            "0",
+            "2",
+            "1",
+            "5",
+            "0"
+          ],
+          [
+            "2",
+            "2",
+            "1",
+            "0",
+            "1"
+          ]
+        ],
+        "payload": {
+          "winAmount": 0,
+          "wins": []
+        }
+      },
+      {
+        "success": true,
+        "player": {
+          "balance": 359.18999999999994
+        },
+        "matrix": [
+          [
+            "0",
+            "7",
+            "0",
+            "3",
+            "0"
+          ],
+          [
+            "1",
+            "7",
+            "3",
+            "0",
+            "1"
+          ],
+          [
+            "1",
+            "7",
+            "2",
+            "1",
+            "0"
+          ]
+        ],
+        "payload": {
+          "winAmount": 0.15,
+          "wins": [
+            {
+              "line": 1,
+              "positions": [
+                0,
+                1,
+                2
+              ],
+              "amount": 0.05,
+              "direction": "LTR"
+            },
+            {
+              "line": 4,
+              "positions": [
+                4,
+                3,
+                2,
+                1
+              ],
+              "amount": 0.1,
+              "direction": "RTL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "player": {
+    "balance": 359.19
+  }
+}

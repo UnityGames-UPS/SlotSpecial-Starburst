@@ -66,12 +66,29 @@ public class UIManager : MonoBehaviour
   [Header("Managers")]
   [SerializeField] private AudioController audioController;
   [SerializeField] private SlotBehaviour slotManager;
+  [SerializeField] private SocketIOManager socketManager;
+  [SerializeField] private JSFunctCalls jsFunctCalls;
   private bool isMusic = true;
   private bool isSound = true;
   private bool isExit = false;
   internal bool BigWinAnimating;
   private Tween ColorCycleTween;
   internal bool isComboSpritesAnimating;
+
+  private void Awake()
+  {
+    if (jsFunctCalls != null)
+      jsFunctCalls.RegisterVisibilityListener(gameObject.name);
+  }
+
+  // Invoked by the JS visibility listener via SendMessage — MUST stay public.
+  public void OnFocusChanged(string value)
+  {
+    bool focused = value == "1";
+    Debug.Log("UNITY FOCUS CHANGED: " + value + " (focused: " + focused + ")");
+    if (audioController) audioController.SetMuteAll(!focused);
+    if (socketManager) socketManager.HandleFocusChange(focused);
+  }
 
   private void Start()
   {
