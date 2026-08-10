@@ -80,6 +80,7 @@ public class SlotBehaviour : MonoBehaviour
   private bool CheckSpinAudio = false;
   private int BetCounter = 0;
   private double currentBalance = 0;
+  private double balanceDisplayed = 0;   //what Balance_text currently shows; may lag currentBalance while tweening
   private double currentTotalBet = 0;
   protected int Lines = 10;
   private int numberOfSlots = 5;          //number of columns
@@ -267,6 +268,9 @@ public class SlotBehaviour : MonoBehaviour
     StarBurstColumns.Clear();
     isStarBurst = false;
     freeSpinIndex = 0;
+    // The whole sequence came from one response, so the balance is only settled here:
+    // the triggering result's player.balance already includes every free-spin win.
+    SetBalance(SocketManager.playerdata.balance, false);
     if (WasAutoSpinON)
     {
       AutoSpin();
@@ -280,17 +284,54 @@ public class SlotBehaviour : MonoBehaviour
   }
   #endregion
 
+  // The single writer for the balance label. currentBalance is the source of truth —
+  // the label is rendered from it and never parsed back out of it, so F3 rounding can't
+  // accumulate across spins. Every balance tween goes through BalanceTween so a new spin
+  // can always cancel the previous one instead of leaving it writing to the same text.
+  private void SetBalance(double value, bool animate)
+  {
+    BalanceTween?.Kill();
+    BalanceTween = null;
+    currentBalance = value;
+
+    if (!animate)
+    {
+      balanceDisplayed = value;
+      if (Balance_text) Balance_text.text = value.ToString("F3");
+      return;
+    }
+
+    // Start from what is actually on screen, so cancelling a still-running tween
+    // (turbo/autospin, where a win lands before the deduction has finished) continues
+    // smoothly instead of jumping to the already-committed currentBalance.
+    BalanceTween = DOTween.To(() => balanceDisplayed, val => balanceDisplayed = val, value, 0.8f)
+      .OnUpdate(() =>
+      {
+        if (Balance_text) Balance_text.text = balanceDisplayed.ToString("F3");
+      })
+      .OnComplete(() =>
+      {
+        // Land on the exact value rather than the last interpolated frame.
+        balanceDisplayed = value;
+        if (Balance_text) Balance_text.text = value.ToString("F3");
+        BalanceTween = null;
+      });
+  }
+
   // Backend-pushed balance correction — snap the display (not tweened, this isn't a win)
   // and re-run the low-balance gate, since an external push can cross the bet threshold.
   internal void UpdateBalanceDisplay(double newBalance)
   {
-    currentBalance = newBalance;
-    if (Balance_text) Balance_text.text = newBalance.ToString("F3");
+    SetBalance(newBalance, false);
     CompareBalance();
   }
 
   private void CompareBalance()
   {
+    // A push landing mid-spin carries the pre-spin balance; the pre-spin gate in
+    // TweenRoutine is the authoritative check, so never pop the dialog while spinning.
+    if (IsSpinning || isStarBurst) return;
+
     if (currentBalance < currentTotalBet)
     {
       uiManager.LowBalPopup();
@@ -338,7 +379,7 @@ public class SlotBehaviour : MonoBehaviour
     if (LineBet_text) LineBet_text.text = SocketManager.initialData.bets[BetCounter].ToString();
     if (TotalBet_text) TotalBet_text.text = (SocketManager.initialData.bets[BetCounter] * Lines).ToString();
     currentTotalBet = SocketManager.initialData.bets[BetCounter] * Lines;
-    // CompareBalance();
+    CompareBalance();
   }
 
   private void ChangeBet(bool IncDec)
@@ -364,7 +405,7 @@ public class SlotBehaviour : MonoBehaviour
     if (LineBet_text) LineBet_text.text = SocketManager.initialData.bets[BetCounter].ToString();
     if (TotalBet_text) TotalBet_text.text = (SocketManager.initialData.bets[BetCounter] * Lines).ToString();
     currentTotalBet = SocketManager.initialData.bets[BetCounter] * Lines;
-    // CompareBalance();
+    CompareBalance();
   }
 
   private void SetFillImage()
@@ -465,9 +506,9 @@ public class SlotBehaviour : MonoBehaviour
     if (LineBet_text) LineBet_text.text = SocketManager.initialData.bets[BetCounter].ToString();
     if (TotalBet_text) TotalBet_text.text = (SocketManager.initialData.bets[BetCounter] * Lines).ToString();
     if (TotalWin_text) TotalWin_text.text = "0.000";
-    if (Balance_text) Balance_text.text = SocketManager.playerdata.balance.ToString("F3");
-    currentBalance = SocketManager.playerdata.balance;
+    // Bet first — CompareBalance would otherwise gate against a currentTotalBet of 0.
     currentTotalBet = SocketManager.initialData.bets[BetCounter] * Lines;
+    SetBalance(SocketManager.playerdata.balance, false);
     CompareBalance();
     uiManager.InitialiseUIData(SocketManager.initUIData.paylines);
   }
@@ -597,7 +638,6 @@ public class SlotBehaviour : MonoBehaviour
       SocketManager.AccumulateResult(BetCounter);
       yield return new WaitUntil(() => SocketManager.isResultdone);
     }
-    currentBalance = SocketManager.playerdata.balance;
     StarBurstResponse starBurstResponse = null;
     if (SocketManager.resultData.features.freeSpin.isFreeSpin)
     {
@@ -702,6 +742,19 @@ public class SlotBehaviour : MonoBehaviour
       PaylinesCoroutine = StartCoroutine(CheckPayoutLineBackend(WinLines, WinLineSymbolCoordinates, starBurstResponse));
     }
     yield return PaylinesCoroutine;
+
+    // Reconcile the display against the server's authoritative balance once the win
+    // animation has played. Skipped on the free-spin trigger spin because that response's
+    // player.balance is already the post-sequence total — FreeSpinCoroutine applies it
+    // when the sequence ends.
+    if (!isStarBurst)
+    {
+      if (BalanceTween != null && BalanceTween.IsActive())
+      {
+        yield return BalanceTween.WaitForCompletion();   // don't cut the count-up short
+      }
+      SetBalance(SocketManager.playerdata.balance, false);
+    }
 
     if (isStarBurst && freeSpinIndex == 0)
     {
@@ -934,12 +987,6 @@ public class SlotBehaviour : MonoBehaviour
   {
     float time = 0.8f;
     double winnings = 0;
-    BalanceTween?.Kill();
-    if (!double.TryParse(Balance_text.text, out double balance))
-    {
-      Debug.Log("Error while conversion");
-    }
-    double newBalance = balance + amount;
     DOTween.To(() => winnings, val => winnings = val, amount, time).OnUpdate(() =>
     {
       if (TotalWin_text)
@@ -947,28 +994,12 @@ public class SlotBehaviour : MonoBehaviour
         TotalWin_text.text = winnings.ToString("F3");
       }
     });
-    DOTween.To(() => balance, (val) => balance = val, newBalance, time).OnUpdate(() =>
-    {
-      if (Balance_text) Balance_text.text = balance.ToString("F3");
-    });
+    SetBalance(currentBalance + amount, true);
   }
 
   private void BalanceDeduction()
   {
-    if (!double.TryParse(TotalBet_text.text, out double bet))
-    {
-      Debug.Log("Error while conversion");
-    }
-    if (!double.TryParse(Balance_text.text, out double balance))
-    {
-      Debug.Log("Error while conversion");
-    }
-    double initAmount = balance;
-    balance -= bet;
-    BalanceTween = DOTween.To(() => initAmount, (val) => initAmount = val, balance, 0.8f).OnUpdate(() =>
-    {
-      if (Balance_text) Balance_text.text = initAmount.ToString("F3");
-    });
+    SetBalance(currentBalance - currentTotalBet, true);
   }
 
   //generate the payout lines generated 
