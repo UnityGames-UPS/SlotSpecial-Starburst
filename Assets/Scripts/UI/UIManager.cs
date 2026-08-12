@@ -68,12 +68,23 @@ public class UIManager : MonoBehaviour
   [SerializeField] private SlotBehaviour slotManager;
   [SerializeField] private SocketIOManager socketManager;
   [SerializeField] private JSFunctCalls jsFunctCalls;
+  [Header("Win Animation Recovery")]
+  // A backgrounded browser tab throttles Unity's loop, which can strand a win visual mid-sequence.
+  // These drive the self-heal on refocus; exposed so QA can tune them without a script rebuild.
+  [SerializeField] private float AnimationWaitTimeout = 3f;
+  [SerializeField] private float WinVisualRecoveryGrace = 2.5f;
+  [SerializeField] private float WinVisualRecoveryPoll = 1f;
+
   private bool isMusic = true;
   private bool isSound = true;
   private bool isExit = false;
   internal bool BigWinAnimating;
   private Tween ColorCycleTween;
   internal bool isComboSpritesAnimating;
+  private Coroutine BigWinStartRoutine;
+  private Coroutine WinAnimationRoutine;
+  private Coroutine ComboRoutine;
+  private Coroutine WinVisualWatchdog;
 
   private void Awake()
   {
@@ -88,12 +99,55 @@ public class UIManager : MonoBehaviour
     Debug.Log("UNITY FOCUS CHANGED: " + value + " (focused: " + focused + ")");
     if (audioController) audioController.SetMuteAll(!focused);
     if (socketManager) socketManager.HandleFocusChange(focused);
+    if (focused)
+    {
+      if (WinVisualWatchdog != null) StopCoroutine(WinVisualWatchdog);
+      WinVisualWatchdog = StartCoroutine(RecoverStuckWinVisuals());
+    }
+  }
+
+  // A stalled frame rate can strand a win visual mid-sequence. Let anything still in flight finish
+  // on its own during the grace period, then confirm with a second sample before tearing down, so
+  // a visual that is merely mid-fade is never cut short.
+  private IEnumerator RecoverStuckWinVisuals()
+  {
+    yield return new WaitForSecondsRealtime(WinVisualRecoveryGrace);
+    if (IsWinVisualStuck())
+    {
+      // Second look a beat later. BigWinAnimating already rules out a win still in progress, so
+      // this mainly covers a teardown fade that is still running - which will have finished by now,
+      // whereas a stranded visual reads identically.
+      yield return new WaitForSecondsRealtime(WinVisualRecoveryPoll);
+      if (IsWinVisualStuck())
+      {
+        Debug.LogWarning("[UI] Stuck win visual detected on focus regain - force resetting.");
+        ForceResetWinVisuals();
+        if (slotManager) slotManager.ForceResetReelVisuals();
+      }
+    }
+    WinVisualWatchdog = null;
+  }
+
+  // "Flag down but pixels still up" is by construction invalid: BigWinAnimating is cleared only
+  // inside ForceResetWinVisuals, which also clears every visual below.
+  private bool IsWinVisualStuck()
+  {
+    if (BigWinAnimating) return false;
+    if (ColorCycleTween != null && ColorCycleTween.IsActive()) return true;
+    if (targetImage && targetImage.color.a > 0.01f) return true;
+    if (bigWinStartAnimation && bigWinStartAnimation.rendererDelegate
+        && bigWinStartAnimation.rendererDelegate.color.a > 0.01f) return true;
+    if (Win_Image && Win_Image.rectTransform.localScale.x > 0.01f) return true;
+    if (comboAnimationImage && comboAnimationImage.color.a > 0.01f) return true;
+    return false;
   }
 
   private void Start()
   {
     if (SkipWinAnimation) SkipWinAnimation.onClick.RemoveAllListeners();
-    if (SkipWinAnimation) SkipWinAnimation.onClick.AddListener(StopWinAnimation);
+    // Full reset rather than StopWinAnimation: this is the player's manual escape from a stranded
+    // overlay, so it must also clear BigWinAnimating and stop the owning coroutines.
+    if (SkipWinAnimation) SkipWinAnimation.onClick.AddListener(ForceResetWinVisuals);
 
     if (LBExit_Button) LBExit_Button.onClick.RemoveAllListeners();
     if (LBExit_Button) LBExit_Button.onClick.AddListener(delegate { ClosePopup(LBPopup_Object); });
@@ -297,6 +351,26 @@ public class UIManager : MonoBehaviour
     }
   }
 
+  // Single-flight entry points. These own the coroutines on UIManager so the component that owns
+  // the visuals can also stop them; previously they ran on SlotBehaviour with the handle discarded.
+  internal void PlayBigWinStart()
+  {
+    if (BigWinStartRoutine != null) StopCoroutine(BigWinStartRoutine);
+    BigWinStartRoutine = StartCoroutine(BigWinStartAnim());
+  }
+
+  internal void PlayWinAnimation(Sprite winSprite, Sprite[] animationSprites)
+  {
+    if (WinAnimationRoutine != null) StopCoroutine(WinAnimationRoutine);
+    WinAnimationRoutine = StartCoroutine(StartWinAnimation(winSprite, animationSprites));
+  }
+
+  internal void PlayComboSprite(Sprite sprite)
+  {
+    if (ComboRoutine != null) StopCoroutine(ComboRoutine);
+    ComboRoutine = StartCoroutine(AnimateSprite(sprite));
+  }
+
   internal IEnumerator StartWinAnimation(Sprite winSprite, Sprite[] animationSprites)
   {
     ImageAnimation winImageAnimation = Win_Image.GetComponent<ImageAnimation>();
@@ -304,30 +378,107 @@ public class UIManager : MonoBehaviour
     winImageAnimation.textureArray.Clear();
     winImageAnimation.textureArray.AddRange(animationSprites);
     winImageAnimation.doLoopAnimation = true;
+    // The scene has this animation playing from Awake, so StartAnimation() alone is a no-op and the
+    // frame delay would never be recomputed for the sprite set we just swapped in.
+    winImageAnimation.StopAnimation();
     winImageAnimation.StartAnimation();
     Win_Image.rectTransform.DOScale(1, 0.2f);
     yield return new WaitForSeconds(4f);
+    WinAnimationRoutine = null;
     StopWinAnimation();
-    BigWinAnimating = false;
   }
 
+  // Graceful end-of-win teardown - fades out over ~0.5s. Reaches the same terminal state as
+  // ForceResetWinVisuals (flags cleared, routines stopped), it just doesn't snap to get there.
+  // Use this whenever the win ended normally; ForceResetWinVisuals is for recovery and skip.
   internal void StopWinAnimation()
   {
-    targetImage.DOFade(0, 0.5f).OnComplete(() => { ColorCycleTween.Kill(); });
-    ImageAnimation winImageAnimation = Win_Image.GetComponent<ImageAnimation>();
-    Win_Image.rectTransform.DOScale(0, 0.5f).OnComplete(() => { winImageAnimation.StopAnimation(); });
+    if (BigWinStartRoutine != null) { StopCoroutine(BigWinStartRoutine); BigWinStartRoutine = null; }
+    if (WinAnimationRoutine != null) { StopCoroutine(WinAnimationRoutine); WinAnimationRoutine = null; }
+
+    // Killed immediately rather than from the fade's OnComplete: if the burst animation calls
+    // CycleColors() after that callback ran, the new infinite tween would have no killer left.
+    ColorCycleTween?.Kill();
+    ColorCycleTween = null;
+
+    if (targetImage)
+    {
+      targetImage.DOKill();
+      targetImage.DOFade(0, 0.5f);
+    }
+
+    if (bigWinStartAnimation && bigWinStartAnimation.rendererDelegate)
+    {
+      ImageAnimation burst = bigWinStartAnimation;
+      burst.rendererDelegate.DOKill();
+      burst.rendererDelegate.DOFade(0, 0.5f).OnComplete(() => { if (burst) burst.StopAnimation(); });
+    }
+
+    if (Win_Image)
+    {
+      ImageAnimation winImageAnimation = Win_Image.GetComponent<ImageAnimation>();
+      Win_Image.rectTransform.DOKill();
+      Win_Image.rectTransform.DOScale(0, 0.5f).OnComplete(() => { if (winImageAnimation) winImageAnimation.StopAnimation(); });
+    }
+
+    BigWinAnimating = false;
   }
 
   internal IEnumerator BigWinStartAnim()
   {
+    if (bigWinStartAnimation == null || bigWinStartAnimation.rendererDelegate == null) yield break;
+    if (bigWinStartAnimation.textureArray.Count < 10) yield break;
+    int last = bigWinStartAnimation.textureArray.Count - 1;
+
+    // This animation is a one-shot: once it ends it never calls StopAnimation() on itself, so a
+    // previous run that was interrupted leaves it latched PLAYING and every StartAnimation() after
+    // that is a no-op. Stopping first is what makes a repeat big win work at all.
+    bigWinStartAnimation.StopAnimation();
+    bigWinStartAnimation.rendererDelegate.DOKill();
     bigWinStartAnimation.rendererDelegate.DOFade(1, 0.2f);
     bigWinStartAnimation.StartAnimation();
-    yield return new WaitUntil(() => bigWinStartAnimation.textureArray[^10] == bigWinStartAnimation.rendererDelegate.sprite);
+
+    yield return ImageAnimation.WaitForFrame(bigWinStartAnimation, last - 9, AnimationWaitTimeout);
     CycleColors();
-    yield return new WaitUntil(() => bigWinStartAnimation.textureArray[^5] == bigWinStartAnimation.rendererDelegate.sprite);
+    yield return ImageAnimation.WaitForFrame(bigWinStartAnimation, last - 4, AnimationWaitTimeout);
     bigWinStartAnimation.rendererDelegate.DOFade(0, 0.2f);
-    yield return new WaitUntil(() => bigWinStartAnimation.textureArray[^1] == bigWinStartAnimation.rendererDelegate.sprite);
+    yield return ImageAnimation.WaitForFrame(bigWinStartAnimation, last, AnimationWaitTimeout);
     bigWinStartAnimation.StopAnimation();
+    BigWinStartRoutine = null;
+  }
+
+  // Idempotent teardown for every big/mega/huge win visual, including the combo sprite. Safe to
+  // call from any state and any number of times. The visuals ease out rather than snap; the state
+  // that other coroutines gate on (BigWinAnimating, isComboSpritesAnimating, the routine handles)
+  // is cleared synchronously before this returns.
+  internal void ForceResetWinVisuals()
+  {
+    StopWinAnimation();
+    ResetComboVisual();
+  }
+
+  // The combo sprite is made visible at the top of AnimateSprite and cleared only at its tail, so
+  // anything that kills that coroutine mid-flight used to strand it at full alpha with no other
+  // reset site. This is that reset site - it eases out the same way AnimateSprite's own exit does,
+  // while clearing the flag synchronously because CheckPayoutLineBackend spins on it.
+  internal void ResetComboVisual()
+  {
+    if (ComboRoutine != null) { StopCoroutine(ComboRoutine); ComboRoutine = null; }
+    if (comboAnimationImage)
+    {
+      comboAnimationImage.DOKill();
+      comboAnimationImage.rectTransform.DOKill();
+      if (comboAnimationImage.color.a > 0.01f)
+      {
+        comboAnimationImage.DOFade(0, 0.3f);
+        comboAnimationImage.rectTransform.DOScale(Vector3.one * 1.5f, 0.3f);
+      }
+      else
+      {
+        comboAnimationImage.rectTransform.localScale = Vector3.zero;
+      }
+    }
+    isComboSpritesAnimating = false;
   }
 
   private void CycleColors()
@@ -394,7 +545,8 @@ public class UIManager : MonoBehaviour
     // Fade out the image.
     comboAnimationImage.DOFade(0, 0.3f).WaitForCompletion();
     yield return comboAnimationImage.rectTransform.DOScale(Vector3.one * 1.5f, 0.3f).WaitForCompletion();
-    isComboSpritesAnimating = false;
+    ComboRoutine = null;
+    ResetComboVisual();
   }
 
   private void CallOnExitFunction()

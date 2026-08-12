@@ -70,6 +70,12 @@ public class SlotBehaviour : MonoBehaviour
   [SerializeField] private UIManager uiManager;
   [SerializeField] private PayoutCalculation PayCalculator;
   [SerializeField] private SocketIOManager SocketManager;
+
+  [Header("Animation Recovery")]
+  // Wall-clock cap on any wait for a sprite animation to reach a given frame. A backgrounded
+  // browser tab throttles Unity's loop badly enough that such a wait can otherwise never resolve.
+  [SerializeField] private float AnimationWaitTimeout = 3f;
+
   private Dictionary<int, Tween> alltweens = new();
   private List<ImageAnimation> TempList = new();  //stores the sprites whose animation is running at present 
   private Coroutine AutoSpinRoutine = null;
@@ -87,8 +93,8 @@ public class SlotBehaviour : MonoBehaviour
   private ImageAnimation BaseImageAnimation;
   private bool isBaseAnimationRunning;
   private Coroutine BaseAnimationCoroutine;
-  private Coroutine ComboAnimationCoroutine;
   private Coroutine PaylinesCoroutine;
+  private readonly List<Coroutine> RainbowRotationRoutines = new();
   private int freeSpinIndex;
   private bool isStarBurst;
   private List<int> StarBurstColumns = new();
@@ -268,6 +274,8 @@ public class SlotBehaviour : MonoBehaviour
     StarBurstColumns.Clear();
     isStarBurst = false;
     freeSpinIndex = 0;
+    // isStarBurst is only now false, so this is the first point the rainbow overlays can be cleared.
+    ForceResetReelVisuals();
     // The whole sequence came from one response, so the balance is only settled here:
     // the triggering result's player.balance already includes every free-spin win.
     SetBalance(SocketManager.playerdata.balance, false);
@@ -480,7 +488,7 @@ public class SlotBehaviour : MonoBehaviour
       if (BaseImageAnimation.textureArray.Count > 0)
       {
         BaseImageAnimation.StartAnimation();
-        yield return new WaitUntil(() => BaseImageAnimation.textureArray[^1] == BaseImageAnimation.rendererDelegate.sprite);
+        yield return ImageAnimation.WaitForFrame(BaseImageAnimation, BaseImageAnimation.textureArray.Count - 1, AnimationWaitTimeout);
         BaseImageAnimation.StopAnimation();
       }
       BaseImageAnimation = null;
@@ -584,6 +592,7 @@ public class SlotBehaviour : MonoBehaviour
     StopGameAnimation();
     PayCalculator.ResetLines();
     uiManager.StopWinAnimation();
+    ForceResetReelVisuals();
 
     tweenroutine = StartCoroutine(TweenRoutine());
 
@@ -1066,7 +1075,7 @@ public class SlotBehaviour : MonoBehaviour
           {
             ImageAnimation RainbowRotationAnimation = Tempimages[i].slotImages[j].transform.GetChild(0).GetComponent<ImageAnimation>();
             Tempimages[i].slotImages[j].DOFade(0, 0.2f);
-            StartCoroutine(RainbowRotationCoroutine(RainbowRotationAnimation, Tempimages[i].slotImages[j]));
+            RainbowRotationRoutines.Add(StartCoroutine(RainbowRotationCoroutine(RainbowRotationAnimation, Tempimages[i].slotImages[j])));
             yield return new WaitForSeconds(0.5f);
           }
         }
@@ -1117,7 +1126,7 @@ public class SlotBehaviour : MonoBehaviour
 
       if (!CanPlayComboAnim)
       {
-        StartCoroutine(uiManager.BigWinStartAnim());
+        uiManager.PlayBigWinStart();
         uiManager.BigWinAnimating = true;
         if (isStarBurst)
         {
@@ -1162,7 +1171,7 @@ public class SlotBehaviour : MonoBehaviour
               {
                 yield return null;
               }
-              ComboAnimationCoroutine = StartCoroutine(uiManager.AnimateSprite(comboSprite));
+              uiManager.PlayComboSprite(comboSprite);
             }
           }
         }
@@ -1178,14 +1187,14 @@ public class SlotBehaviour : MonoBehaviour
           {
             if (TempList[j].textureArray.Count > 0)
             {
-              yield return new WaitUntil(() => TempList[j].textureArray[^1] == TempList[j].rendererDelegate.sprite);
+              yield return ImageAnimation.WaitForFrame(TempList[j], TempList[j].textureArray.Count - 1, AnimationWaitTimeout);
               break;
             }
           }
         }
         else
         {
-          yield return new WaitUntil(() => TempList[^1].textureArray[^1] == TempList[^1].rendererDelegate.sprite);
+          yield return ImageAnimation.WaitForFrame(TempList[^1], TempList[^1].textureArray.Count - 1, AnimationWaitTimeout);
         }
       }
 
@@ -1208,26 +1217,28 @@ public class SlotBehaviour : MonoBehaviour
     if (amount >= currentTotalBet * 5 && amount < currentTotalBet * 10)
     {
       audioController.PlayWLAudio("megaWin");
-      StartCoroutine(uiManager.StartWinAnimation(BigWin_Sprite, BigWinAnimationSprites));
+      uiManager.PlayWinAnimation(BigWin_Sprite, BigWinAnimationSprites);
     }
     else if (amount >= currentTotalBet * 10 && amount < currentTotalBet * 15)
     {
       audioController.PlayWLAudio("bigwin");
-      StartCoroutine(uiManager.StartWinAnimation(HugeWin_Sprite, HugeWinAnimationSprites));
+      uiManager.PlayWinAnimation(HugeWin_Sprite, HugeWinAnimationSprites);
     }
     else if (amount >= currentTotalBet * 15)
     {
       audioController.PlayWLAudio("bigwin");
-      StartCoroutine(uiManager.StartWinAnimation(MegaWin_Sprite, MegaWinAnimationSprites));
+      uiManager.PlayWinAnimation(MegaWin_Sprite, MegaWinAnimationSprites);
     }
   }
 
   private IEnumerator RainbowRotationCoroutine(ImageAnimation RainbowRotationAnimation, Image image)
   {
+    if (RainbowRotationAnimation == null || RainbowRotationAnimation.textureArray.Count < 10) yield break;
+    int last = RainbowRotationAnimation.textureArray.Count - 1;
     RainbowRotationAnimation.StartAnimation();
-    yield return new WaitUntil(() => RainbowRotationAnimation.textureArray[^10] == RainbowRotationAnimation.rendererDelegate.sprite);
+    yield return ImageAnimation.WaitForFrame(RainbowRotationAnimation, last - 9, AnimationWaitTimeout);
     image.sprite = myImages[7];
-    yield return new WaitUntil(() => RainbowRotationAnimation.textureArray[^1] == RainbowRotationAnimation.rendererDelegate.sprite);
+    yield return ImageAnimation.WaitForFrame(RainbowRotationAnimation, last, AnimationWaitTimeout);
     RainbowRotationAnimation.StopAnimation();
     RainbowRotationAnimation.rendererDelegate.sprite = Empty_Sprite;
     image.color = new Color(1, 1, 1, 1);
@@ -1260,6 +1271,43 @@ public class SlotBehaviour : MonoBehaviour
       TempList.Add(temp);
       temp.IsAnim = true;
     }
+  }
+
+  // Reel-side counterpart to UIManager.ForceResetWinVisuals. Idempotent, never yields: puts every
+  // reel visual that a coroutine could have left half-applied back to its resting state.
+  internal void ForceResetReelVisuals()
+  {
+    foreach (Coroutine c in RainbowRotationRoutines)
+    {
+      if (c != null) StopCoroutine(c);
+    }
+    RainbowRotationRoutines.Clear();
+
+    // Deliberately not gated on isStarBurst, unlike StopGameAnimation: that gate is exactly what
+    // leaves these lit when a StarBurst sequence is interrupted.
+    foreach (ImageAnimation r in RainbowAnimations)
+    {
+      if (r == null || r.rendererDelegate == null) continue;
+      r.rendererDelegate.DOKill();
+      r.StopAnimation();
+      Color rc = r.rendererDelegate.color;
+      rc.a = 0f;
+      r.rendererDelegate.color = rc;
+    }
+
+    // Undoes both FadeOutImages' dim and the per-symbol DOFade(0) that RainbowRotationCoroutine
+    // relies on restoring at its tail.
+    foreach (SlotImage row in Tempimages)
+    {
+      foreach (Image img in row.slotImages)
+      {
+        if (img == null) continue;
+        img.DOKill();
+        img.color = new Color(1, 1, 1, 1);
+      }
+    }
+
+    if (StopSpin_Button) StopSpin_Button.gameObject.SetActive(false);
   }
 
   private void FadeOutImages()
@@ -1310,11 +1358,7 @@ public class SlotBehaviour : MonoBehaviour
       }
     }
 
-    if (uiManager.isComboSpritesAnimating)
-    {
-      StopCoroutine(ComboAnimationCoroutine);
-      uiManager.isComboSpritesAnimating = false;
-    }
+    uiManager.ResetComboVisual();
 
     if (!isStarBurst)
     {

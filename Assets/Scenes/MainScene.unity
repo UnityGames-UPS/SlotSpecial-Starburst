@@ -6017,6 +6017,9 @@ MonoBehaviour:
   slotManager: {fileID: 2046803210}
   socketManager: {fileID: 500036492}
   jsFunctCalls: {fileID: 2129569334}
+  AnimationWaitTimeout: 3
+  WinVisualRecoveryGrace: 5
+  WinVisualRecoveryPoll: 1
 --- !u!1 &379481112
 GameObject:
   m_ObjectHideFlags: 0
@@ -8753,7 +8756,7 @@ MonoBehaviour:
   uiManager: {fileID: 377874625}
   RaycastBlocker: {fileID: 1843602287}
   bonusdata: []
-  testToken: a116b125301641ca93e30cc0509ac665
+  testToken: 0b4ffb73f0dd4834aaabc3819ab73ad7
   JSManager: {fileID: 2129569334}
 --- !u!1 &501201621
 GameObject:
@@ -20475,7 +20478,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0, b: 0, a: 0}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -20518,7 +20521,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -32804,6 +32807,7 @@ MonoBehaviour:
   uiManager: {fileID: 377874625}
   PayCalculator: {fileID: 963807277}
   SocketManager: {fileID: 500036492}
+  AnimationWaitTimeout: 3
 --- !u!1 &2050487291
 GameObject:
   m_ObjectHideFlags: 0
