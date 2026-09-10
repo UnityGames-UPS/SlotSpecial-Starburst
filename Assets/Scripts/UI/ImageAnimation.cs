@@ -25,6 +25,7 @@ public class ImageAnimation : MonoBehaviour
 	public float delayBetweenLoop;
 	public bool startOnAwake =false;
 	internal bool IsAnim = false;
+	internal bool hideRendererOnComplete;
 
 	// Sprites displayed since the current playback started. Monotonic — unlike indexOfTexture it
 	// never wraps on loop, so it is safe to wait on. Waiters must never compare rendererDelegate.sprite
@@ -92,6 +93,11 @@ public class ImageAnimation : MonoBehaviour
 			if (doLoopAnimation)
 			{
 				Invoke("AnimationProcess", delayBetweenAnimation + delayBetweenLoop);
+			}
+			else if (hideRendererOnComplete)
+			{
+				rendererDelegate.enabled = false;
+				currentAnimationState = ImageState.NONE;
 			}
 		}
 		else

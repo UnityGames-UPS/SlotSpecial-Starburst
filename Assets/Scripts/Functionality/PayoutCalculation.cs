@@ -4,11 +4,11 @@ using UnityEngine.UI.Extensions;
 
 public class PayoutCalculation : MonoBehaviour
 {
-    [SerializeField] private int x_Distance;
-    [SerializeField] private int y_Distance;
+    [SerializeField] private float[] x_Offsets = { 0f, 262f, 551f, 840f, 1094f };
+    [SerializeField] private int y_Distance = 215;
     [SerializeField] private Transform LineContainer;
     [SerializeField] private GameObject Line_Prefab;
-    [SerializeField] private Vector2 InitialLinePosition = new Vector2(-315, 100);
+    [SerializeField] private Vector2 InitialLinePosition = new Vector2(-551f, 185.12f);
     GameObject TempObj = null;
     //generate lines at runtime accordingly
     internal void GeneratePayoutLinesBackend(List<int> y_index, int Count, bool isStatic = false)
@@ -18,7 +18,7 @@ public class PayoutCalculation : MonoBehaviour
         UILineRenderer MyLine = MyLineObj.GetComponent<UILineRenderer>();
         for (int i = 0; i < Count; i++)
         {
-            var points = new Vector2() { x = i * x_Distance, y = y_index[i] * -y_Distance };
+            var points = new Vector2() { x = x_Offsets[i], y = y_index[i] * -y_Distance };
             var pointlist = new List<Vector2>(MyLine.Points);
             pointlist.Add(points);
             MyLine.Points = pointlist.ToArray();

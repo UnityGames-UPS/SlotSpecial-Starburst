@@ -76,6 +76,10 @@ public class SlotBehaviour : MonoBehaviour
   // browser tab throttles Unity's loop badly enough that such a wait can otherwise never resolve.
   [SerializeField] private float AnimationWaitTimeout = 3f;
 
+  [Header("Win Line Presentation")]
+  [SerializeField] private float AllWinningLinesDuration = 1f;
+  [SerializeField] private float SingleWinningLineDuration = 0.8f;
+
   private Dictionary<int, Tween> alltweens = new();
   private List<ImageAnimation> TempList = new();  //stores the sprites whose animation is running at present 
   private Coroutine AutoSpinRoutine = null;
@@ -94,6 +98,7 @@ public class SlotBehaviour : MonoBehaviour
   private bool isBaseAnimationRunning;
   private Coroutine BaseAnimationCoroutine;
   private Coroutine PaylinesCoroutine;
+  private Coroutine ManualWinLineCycleCoroutine;
   private readonly List<Coroutine> RainbowRotationRoutines = new();
   private int freeSpinIndex;
   private bool isStarBurst;
@@ -109,6 +114,7 @@ public class SlotBehaviour : MonoBehaviour
   private void Start()
   {
     IsAutoSpin = false;
+    ResetAllWinningEffects();
 
     if (Turbo_Button) Turbo_Button.onClick.RemoveAllListeners();
     if (Turbo_Button) Turbo_Button.onClick.AddListener(TurboToggle);
@@ -938,10 +944,10 @@ public class SlotBehaviour : MonoBehaviour
 
   private void PopulateWinningsAnimationSprites(ImageAnimation imageAnimation, int v)
   {
+    ResetWinningEffect(imageAnimation);
     imageAnimation.id = v.ToString();
-    imageAnimation.textureArray.Clear();
-    imageAnimation.textureArray.TrimExcess();
     imageAnimation.doLoopAnimation = false;
+    imageAnimation.hideRendererOnComplete = true;
     switch (v)
     {
       case 7:
@@ -1011,10 +1017,61 @@ public class SlotBehaviour : MonoBehaviour
     SetBalance(currentBalance - currentTotalBet, true);
   }
 
+  private void GeneratePayoutLines(IEnumerable<int> lineIds)
+  {
+    foreach (int lineId in lineIds)
+    {
+      if (!y_string.TryGetValue(lineId + 1, out string lineValue)) continue;
+      List<int> yPoints = lineValue.Split(',').Select(Int32.Parse).ToList();
+      PayCalculator.GeneratePayoutLinesBackend(yPoints, yPoints.Count);
+    }
+  }
+
+  private List<KeyValuePair<int, int>> GetWinCoordinates(Win win)
+  {
+    List<KeyValuePair<int, int>> coordinates = new();
+    bool isRTL = win.direction == "RTL";
+
+    for (int i = 0; i < win.positions.Count; i++)
+    {
+      int linePosition = isRTL ? numberOfSlots - 1 - i : i;
+      int rowIndex = SocketManager.initialData.lines[win.line][linePosition];
+      coordinates.Add(new KeyValuePair<int, int>(rowIndex, win.positions[i]));
+    }
+
+    return coordinates;
+  }
+
+  private void HighlightWinningSymbols(IEnumerable<KeyValuePair<int, int>> coordinates)
+  {
+    foreach (KeyValuePair<int, int> coordinate in coordinates)
+    {
+      ResultMatrix[coordinate.Key].slotImages[coordinate.Value].color = Color.white;
+    }
+  }
+
+  private IEnumerator CycleManualWinLines(List<Win> wins)
+  {
+    yield return new WaitForSeconds(AllWinningLinesDuration);
+
+    while (true)
+    {
+      foreach (Win win in wins)
+      {
+        PayCalculator.ResetLines();
+        yield return null;
+
+        FadeOutImages();
+        HighlightWinningSymbols(GetWinCoordinates(win));
+        GeneratePayoutLines(new[] { win.line });
+        yield return new WaitForSeconds(SingleWinningLineDuration);
+      }
+    }
+  }
+
   //generate the payout lines generated 
   private IEnumerator CheckPayoutLineBackend(List<int> WinLines, List<KeyValuePair<int, int>> coords, StarBurstResponse SBresponse = null)
   {
-    List<int> y_points = null;
     if (WinLines.Count > 0 || coords.Count > 0 || SBresponse != null)
     {
       if (!isStarBurst)
@@ -1096,6 +1153,11 @@ public class SlotBehaviour : MonoBehaviour
         if (slotImage.GetComponent<Image>().sprite == myImages[7])
           continue;
         transforms.Add(slotImage.transform.GetChild(0));
+      }
+
+      if (WinLines.Count > 0)
+      {
+        GeneratePayoutLines(WinLines);
       }
 
       bool CanPlayComboAnim;
@@ -1196,12 +1258,17 @@ public class SlotBehaviour : MonoBehaviour
         {
           yield return ImageAnimation.WaitForFrame(TempList[^1], TempList[^1].textureArray.Count - 1, AnimationWaitTimeout);
         }
+
+        foreach (ImageAnimation animation in TempList)
+        {
+          ResetWinningEffect(animation);
+        }
       }
 
-      for (int i = 0; i < WinLines.Count; i++)
+      if (WinLines.Count > 1 && !IsAutoSpin && !isStarBurst)
       {
-        y_points = y_string[WinLines[i] + 1]?.Split(',')?.Select(Int32.Parse)?.ToList();
-        PayCalculator.GeneratePayoutLinesBackend(y_points, y_points.Count);
+        if (ManualWinLineCycleCoroutine != null) StopCoroutine(ManualWinLineCycleCoroutine);
+        ManualWinLineCycleCoroutine = StartCoroutine(CycleManualWinLines(new List<Win>(SocketManager.resultData.payload.wins)));
       }
     }
     else
@@ -1235,15 +1302,13 @@ public class SlotBehaviour : MonoBehaviour
   {
     if (RainbowRotationAnimation == null || RainbowRotationAnimation.textureArray.Count < 10) yield break;
     int last = RainbowRotationAnimation.textureArray.Count - 1;
+    SetWinningEffectVisible(RainbowRotationAnimation, true);
     RainbowRotationAnimation.StartAnimation();
     yield return ImageAnimation.WaitForFrame(RainbowRotationAnimation, last - 9, AnimationWaitTimeout);
     image.sprite = myImages[7];
     yield return ImageAnimation.WaitForFrame(RainbowRotationAnimation, last, AnimationWaitTimeout);
-    RainbowRotationAnimation.StopAnimation();
-    RainbowRotationAnimation.rendererDelegate.sprite = Empty_Sprite;
     image.color = new Color(1, 1, 1, 1);
-    RainbowRotationAnimation.textureArray.Clear();
-    RainbowRotationAnimation.textureArray.TrimExcess();
+    ResetWinningEffect(RainbowRotationAnimation);
   }
 
   internal void CallCloseSocket()
@@ -1267,9 +1332,51 @@ public class SlotBehaviour : MonoBehaviour
     ImageAnimation temp = animObjects.GetComponent<ImageAnimation>();
     if (temp.textureArray.Count > 0)
     {
+      SetWinningEffectVisible(temp, true);
       temp.StartAnimation();
       TempList.Add(temp);
       temp.IsAnim = true;
+    }
+  }
+
+  private void SetWinningEffectVisible(ImageAnimation animation, bool visible)
+  {
+    if (animation == null || animation.rendererDelegate == null) return;
+
+    if (visible)
+    {
+      Color effectColor = animation.rendererDelegate.color;
+      effectColor.a = 1f;
+      animation.rendererDelegate.color = effectColor;
+    }
+
+    animation.rendererDelegate.enabled = visible;
+  }
+
+  private void ResetWinningEffect(ImageAnimation animation)
+  {
+    if (animation == null) return;
+
+    animation.StopAnimation();
+    animation.IsAnim = false;
+    if (animation.rendererDelegate != null)
+    {
+      animation.rendererDelegate.DOKill();
+      animation.rendererDelegate.enabled = false;
+    }
+    animation.textureArray.Clear();
+    animation.textureArray.TrimExcess();
+  }
+
+  private void ResetAllWinningEffects()
+  {
+    foreach (SlotImage row in ResultMatrix)
+    {
+      foreach (Image slotImage in row.slotImages)
+      {
+        if (slotImage == null || slotImage.transform.childCount == 0) continue;
+        ResetWinningEffect(slotImage.transform.GetChild(0).GetComponent<ImageAnimation>());
+      }
     }
   }
 
@@ -1282,6 +1389,7 @@ public class SlotBehaviour : MonoBehaviour
       if (c != null) StopCoroutine(c);
     }
     RainbowRotationRoutines.Clear();
+    ResetAllWinningEffects();
 
     // Deliberately not gated on isStarBurst, unlike StopGameAnimation: that gate is exactly what
     // leaves these lit when a StarBurst sequence is interrupted.
@@ -1323,6 +1431,11 @@ public class SlotBehaviour : MonoBehaviour
 
   internal void StopGameAnimation()
   {
+    if (ManualWinLineCycleCoroutine != null)
+    {
+      StopCoroutine(ManualWinLineCycleCoroutine);
+      ManualWinLineCycleCoroutine = null;
+    }
     if (PaylinesCoroutine != null)
     {
       StopCoroutine(PaylinesCoroutine);
@@ -1342,10 +1455,12 @@ public class SlotBehaviour : MonoBehaviour
         BaseAnim.textureArray.TrimExcess();
         if (WinningsAnim.textureArray.Count > 0)
         {
-          WinningsAnim.StopAnimation();
+          ResetWinningEffect(WinningsAnim);
         }
-        WinningsAnim.textureArray.Clear();
-        WinningsAnim.textureArray.TrimExcess();
+        else
+        {
+          SetWinningEffectVisible(WinningsAnim, false);
+        }
         ResultMatrix[i].slotImages[j].color = new Color(1, 1, 1, 1);
       }
     }
@@ -1406,7 +1521,7 @@ public class SlotBehaviour : MonoBehaviour
     }
     alltweens[index].Kill();
     slotTransform.localPosition = new Vector3(slotTransform.localPosition.x, -959f);
-    alltweens[index] = slotTransform.DOLocalMoveY(-1691f + 323.195f, .4f).SetEase(Ease.OutQuint);
+    alltweens[index] = slotTransform.DOLocalMoveY(-1338f, .4f).SetEase(Ease.OutQuint);
     if (audioController) audioController.PlayWLAudio("spinStop");
   }
 
