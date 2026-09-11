@@ -142,10 +142,10 @@ TextureImporter:
       name: Bar Coin Resized_00001_0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 37
-        width: 189
-        height: 196
+        x: 13
+        y: 28
+        width: 208
+        height: 216
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

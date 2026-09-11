@@ -355,11 +355,12 @@ public class SlotBehaviour : MonoBehaviour
 
   #region LinesCalculation
 
-  //Destroy Static Lines from button hovers
+  // Destroy the temporary line shown from the numbered line buttons.
   internal void DestroyStaticLine()
   {
     PayCalculator.ResetStaticLine();
   }
+
   internal void GenerateStaticLine(TMP_Text LineID_Text)
   {
     DestroyStaticLine();

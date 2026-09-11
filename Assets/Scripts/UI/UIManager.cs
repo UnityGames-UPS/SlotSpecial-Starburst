@@ -88,6 +88,8 @@ public class UIManager : MonoBehaviour
 
   private void Awake()
   {
+    if (targetImage) targetImage.raycastTarget = false;
+
     if (jsFunctCalls != null)
       jsFunctCalls.RegisterVisibilityListener(gameObject.name);
   }
@@ -355,12 +357,14 @@ public class UIManager : MonoBehaviour
   // the visuals can also stop them; previously they ran on SlotBehaviour with the handle discarded.
   internal void PlayBigWinStart()
   {
+    if (targetImage) targetImage.raycastTarget = true;
     if (BigWinStartRoutine != null) StopCoroutine(BigWinStartRoutine);
     BigWinStartRoutine = StartCoroutine(BigWinStartAnim());
   }
 
   internal void PlayWinAnimation(Sprite winSprite, Sprite[] animationSprites)
   {
+    if (targetImage) targetImage.raycastTarget = true;
     if (WinAnimationRoutine != null) StopCoroutine(WinAnimationRoutine);
     WinAnimationRoutine = StartCoroutine(StartWinAnimation(winSprite, animationSprites));
   }
@@ -403,6 +407,7 @@ public class UIManager : MonoBehaviour
 
     if (targetImage)
     {
+      targetImage.raycastTarget = false;
       targetImage.DOKill();
       targetImage.DOFade(0, 0.5f);
     }

@@ -1,57 +1,21 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using DG.Tweening;
 using TMPro;
 
-public class ManageLineButtons : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IPointerDownHandler
+public class ManageLineButtons : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
   [SerializeField] private SlotBehaviour slotManager;
   [SerializeField] private TMP_Text num_text;
-  [SerializeField] private Sprite HighlightedSprite;
-  [SerializeField] private Sprite NormalSprite;
-  private Image buttonImage;
 
-  void Awake()
+  void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
   {
-    buttonImage = this.gameObject.GetComponent<Image>();
-  }
-
-  public void OnPointerEnter(PointerEventData eventData)
-  {
+    Debug.Log($"Hover entered line button {num_text.text}", this);
     slotManager.GenerateStaticLine(num_text);
-    buttonImage.sprite = HighlightedSprite;
   }
 
-  public void OnPointerExit(PointerEventData eventData)
+  void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
   {
+    Debug.Log($"Hover exited line button {num_text.text}", this);
     slotManager.DestroyStaticLine();
-    buttonImage.sprite = NormalSprite;
   }
-
-  public void OnPointerDown(PointerEventData eventData)
-  {
-    if (Application.platform == RuntimePlatform.WebGLPlayer && Application.isMobilePlatform)
-    {
-      // this.gameObject.GetComponent<Button>().Select();
-      //Debug.Log("run on pointer down");
-      slotManager.GenerateStaticLine(num_text);
-    }
-  }
-
-  public void OnPointerUp(PointerEventData eventData)
-  {
-    if (Application.platform == RuntimePlatform.WebGLPlayer && Application.isMobilePlatform)
-    {
-      //Debug.Log("run on pointer up");
-      slotManager.DestroyStaticLine();
-      DOVirtual.DelayedCall(0.1f, () =>
-      {
-        this.gameObject.GetComponent<Button>().spriteState = default;
-        EventSystem.current.SetSelectedGameObject(null);
-      });
-    }
-  }
-
-  
 }

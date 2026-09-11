@@ -29,6 +29,7 @@ public class PayoutCalculation : MonoBehaviour
 
         if(isStatic)
         {
+            MyLineObj.transform.SetParent(LineContainer.parent, true);
             TempObj = MyLineObj;
         }
     }
