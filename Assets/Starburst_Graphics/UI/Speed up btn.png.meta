@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 095d07d0c71a5fb429583a232fe916e7
+guid: 7b898636f35cb294aac9ddea164863bc
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7387931701403292663
-    second: purple_d_0
+      213: 1636818608804213119
+    second: Speed up btn_0
+  - first:
+      213: -3386432658365027110
+    second: Speed up btn_1
+  - first:
+      213: 5848544833508034691
+    second: Speed up btn_2
+  - first:
+      213: -5532237396948297871
+    second: Speed up btn_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -75,7 +84,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -139,13 +148,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: purple_d_0
+      name: Speed up btn_0
       rect:
         serializedVersion: 2
-        x: 9
+        x: 8
         y: 8
-        width: 233
-        height: 233
+        width: 104
+        height: 104
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +163,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7f39dfe4db4378660800000000000000
-      internalID: 7387931701403292663
+      spriteID: f71368b3ad527b610800000000000000
+      internalID: 1636818608804213119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Speed up btn_1
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 8
+        width: 104
+        height: 104
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adcee567079f001d0800000000000000
+      internalID: -3386432658365027110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Speed up btn_2
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 8
+        width: 104
+        height: 104
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38841360a843a2150800000000000000
+      internalID: 5848544833508034691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Speed up btn_3
+      rect:
+        serializedVersion: 2
+        x: 459
+        y: 8
+        width: 104
+        height: 104
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 177d3c5066b8933b0800000000000000
+      internalID: -5532237396948297871
       vertices: []
       indices: 
       edges: []
@@ -164,7 +239,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 795d5516d97cd714388a9e59d42fc643
     internalID: 0
     vertices: []
     indices: 
@@ -174,7 +249,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      purple_d_0: 7387931701403292663
+      Speed up btn_0: 1636818608804213119
+      Speed up btn_1: -3386432658365027110
+      Speed up btn_2: 5848544833508034691
+      Speed up btn_3: -5532237396948297871
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

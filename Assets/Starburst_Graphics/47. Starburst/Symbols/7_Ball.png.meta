@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 095d07d0c71a5fb429583a232fe916e7
+guid: cd1f1abeb9bf3f842926caab37bafa20
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7387931701403292663
-    second: purple_d_0
+      213: -159096060286511295
+    second: 7 Ball Resized_00000_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -139,23 +139,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: purple_d_0
+      name: 7 Ball Resized_00000_0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 8
-        width: 233
-        height: 233
+        x: 10
+        y: 10
+        width: 237
+        height: 240
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7f39dfe4db4378660800000000000000
-      internalID: 7387931701403292663
+      spriteID: 1475571e9f6cacdf0800000000000000
+      internalID: -159096060286511295
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      purple_d_0: 7387931701403292663
+      7 Ball Resized_00000_0: -159096060286511295
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

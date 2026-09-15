@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 095d07d0c71a5fb429583a232fe916e7
+guid: 78e10957701fbec489ab57ef4373e679
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7387931701403292663
-    second: purple_d_0
+      213: 3399238076485069395
+    second: Terbo_0
+  - first:
+      213: 1633451186578444185
+    second: Terbo_1
+  - first:
+      213: -3235720966242406753
+    second: Terbo_2
+  - first:
+      213: -1413527422437039086
+    second: Terbo_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -75,7 +84,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -139,23 +148,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: purple_d_0
+      name: Terbo_0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 8
-        width: 233
-        height: 233
+        x: 8
+        y: 7
+        width: 104
+        height: 104
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7f39dfe4db4378660800000000000000
-      internalID: 7387931701403292663
+      spriteID: 35aefd745058c2f20800000000000000
+      internalID: 3399238076485069395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Terbo_1
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 9
+        width: 105
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99fc2f5233f2ba610800000000000000
+      internalID: 1633451186578444185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Terbo_2
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 9
+        width: 105
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9e66debce86813d0800000000000000
+      internalID: -3235720966242406753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Terbo_3
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 9
+        width: 104
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 214ed596c44226ce0800000000000000
+      internalID: -1413527422437039086
       vertices: []
       indices: 
       edges: []
@@ -164,7 +239,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -174,7 +249,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      purple_d_0: 7387931701403292663
+      Terbo_0: 3399238076485069395
+      Terbo_1: 1633451186578444185
+      Terbo_2: -3235720966242406753
+      Terbo_3: -1413527422437039086
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

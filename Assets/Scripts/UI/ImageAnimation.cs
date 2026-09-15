@@ -18,6 +18,7 @@ public class ImageAnimation : MonoBehaviour
 	public Image rendererDelegate;
 	public bool useSharedMaterial = true;
 	public bool doLoopAnimation = true;
+	[SerializeField, Min(0)] private int loopStartFrame;
 	private int indexOfTexture;
 	private float idealFrameRate = 0.0416666679f;
 	private float delayBetweenAnimation;
@@ -89,15 +90,20 @@ public class ImageAnimation : MonoBehaviour
 		indexOfTexture++;
 		if (indexOfTexture == textureArray.Count)
 		{
-			indexOfTexture = 0;
 			if (doLoopAnimation)
 			{
+				indexOfTexture = Mathf.Clamp(loopStartFrame, 0, textureArray.Count - 1);
 				Invoke("AnimationProcess", delayBetweenAnimation + delayBetweenLoop);
 			}
 			else if (hideRendererOnComplete)
 			{
+				indexOfTexture = 0;
 				rendererDelegate.enabled = false;
 				currentAnimationState = ImageState.NONE;
+			}
+			else
+			{
+				indexOfTexture = 0;
 			}
 		}
 		else

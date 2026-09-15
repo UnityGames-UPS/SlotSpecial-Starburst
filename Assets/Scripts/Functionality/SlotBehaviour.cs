@@ -31,18 +31,14 @@ public class SlotBehaviour : MonoBehaviour
   [SerializeField] private Button LineBetPlus_Button;
   [SerializeField] private Button LineBetMinus_Button;
   [SerializeField] private Button MaxBet_Button;
-  [SerializeField] private Button Turbo_Button;
+  [SerializeField] private Button NormalSpinSpeed_Button;
+  [SerializeField] private Button FastSpinSpeed_Button;
   [SerializeField] private Button StopSpin_Button;
   [Header("Animated Sprites")]
-  [SerializeField] private Sprite[] BlueGem_Sprites;
   [SerializeField] private Sprite[] BlueGemEffect_Sprites;
-  [SerializeField] private Sprite[] GreenGem_Sprites;
   [SerializeField] private Sprite[] GreenGemEffect_Sprites;
-  [SerializeField] private Sprite[] PurpleGem_Sprites;
   [SerializeField] private Sprite[] PurpleGemEffect_Sprites;
-  [SerializeField] private Sprite[] YellowGem_Sprites;
   [SerializeField] private Sprite[] YellowGemEffect_Sprites;
-  [SerializeField] private Sprite[] OrangeGem_Sprites;
   [SerializeField] private Sprite[] OrangeGemEffect_Sprites;
   [SerializeField] private Sprite[] Seven_Sprites;
   [SerializeField] private Sprite[] Bar_Sprites;
@@ -51,7 +47,6 @@ public class SlotBehaviour : MonoBehaviour
   [SerializeField] private Sprite[] BigWinAnimationSprites;
   [SerializeField] private Sprite[] HugeWinAnimationSprites;
   [SerializeField] private Sprite[] MegaWinAnimationSprites;
-  [SerializeField] private Sprite TurboToggleSprite;
 
   [Header("Miscellaneous UI")]
   [SerializeField] private Sprite BigWin_Sprite;
@@ -62,6 +57,7 @@ public class SlotBehaviour : MonoBehaviour
   [SerializeField] private TMP_Text TotalBet_text;
   [SerializeField] private TMP_Text LineBet_text;
   [SerializeField] private TMP_Text TotalWin_text;
+  [SerializeField] private TMP_Text WinAmountTextTemplate;
   [SerializeField] private Image[] Fill_Images;
   [SerializeField] private ImageAnimation[] RainbowAnimations;
 
@@ -77,8 +73,8 @@ public class SlotBehaviour : MonoBehaviour
   [SerializeField] private float AnimationWaitTimeout = 3f;
 
   [Header("Win Line Presentation")]
-  [SerializeField] private float AllWinningLinesDuration = 1f;
   [SerializeField] private float SingleWinningLineDuration = 0.8f;
+  [SerializeField] private float WinAmountMoveSpeed = 800f;
 
   private Dictionary<int, Tween> alltweens = new();
   private List<ImageAnimation> TempList = new();  //stores the sprites whose animation is running at present 
@@ -98,7 +94,6 @@ public class SlotBehaviour : MonoBehaviour
   private bool isBaseAnimationRunning;
   private Coroutine BaseAnimationCoroutine;
   private Coroutine PaylinesCoroutine;
-  private Coroutine ManualWinLineCycleCoroutine;
   private readonly List<Coroutine> RainbowRotationRoutines = new();
   private int freeSpinIndex;
   private bool isStarBurst;
@@ -114,10 +109,21 @@ public class SlotBehaviour : MonoBehaviour
   private void Start()
   {
     IsAutoSpin = false;
+    IsTurboOn = false;
     ResetAllWinningEffects();
+    if (WinAmountTextTemplate) WinAmountTextTemplate.gameObject.SetActive(false);
 
-    if (Turbo_Button) Turbo_Button.onClick.RemoveAllListeners();
-    if (Turbo_Button) Turbo_Button.onClick.AddListener(TurboToggle);
+    if (NormalSpinSpeed_Button)
+    {
+      NormalSpinSpeed_Button.onClick.RemoveAllListeners();
+      NormalSpinSpeed_Button.onClick.AddListener(TurboToggle);
+    }
+    if (FastSpinSpeed_Button)
+    {
+      FastSpinSpeed_Button.onClick.RemoveAllListeners();
+      FastSpinSpeed_Button.onClick.AddListener(TurboToggle);
+    }
+    UpdateSpinSpeedButtons();
 
     if (StopSpin_Button) StopSpin_Button.onClick.RemoveAllListeners();
     if (StopSpin_Button) StopSpin_Button.onClick.AddListener(() => { audioController.PlayButtonAudio(); StopSpinToggle = true; StopSpin_Button.gameObject.SetActive(false); });
@@ -174,17 +180,14 @@ public class SlotBehaviour : MonoBehaviour
   void TurboToggle()
   {
     audioController.PlayButtonAudio();
-    if (IsTurboOn)
-    {
-      IsTurboOn = false;
-      Turbo_Button.GetComponent<ImageAnimation>().StopAnimation();
-      Turbo_Button.image.sprite = TurboToggleSprite;
-    }
-    else
-    {
-      IsTurboOn = true;
-      Turbo_Button.GetComponent<ImageAnimation>().StartAnimation();
-    }
+    IsTurboOn = !IsTurboOn;
+    UpdateSpinSpeedButtons();
+  }
+
+  private void UpdateSpinSpeedButtons()
+  {
+    if (NormalSpinSpeed_Button) NormalSpinSpeed_Button.gameObject.SetActive(!IsTurboOn);
+    if (FastSpinSpeed_Button) FastSpinSpeed_Button.gameObject.SetActive(IsTurboOn);
   }
   #region Autospin
   private void AutoSpin()
@@ -447,7 +450,7 @@ public class SlotBehaviour : MonoBehaviour
         if (j >= 8 && j <= 10)
         {
           var imageAnimation = images[i].slotImages[j].GetComponent<ImageAnimation>();
-          if (imageAnimation != null)
+          if (imageAnimation != null && randomIndex >= 5 && randomIndex <= 6)
           {
             PopulateBaseAnimationSprites(imageAnimation, randomIndex);
           }
@@ -544,27 +547,6 @@ public class SlotBehaviour : MonoBehaviour
     animScript.textureArray.TrimExcess();
     switch (val)
     {
-      case 0:
-        animScript.textureArray.AddRange(PurpleGem_Sprites);
-        animScript.AnimationSpeed = PurpleGem_Sprites.Length - 8;
-        break;
-
-      case 1:
-        animScript.textureArray.AddRange(BlueGem_Sprites);
-        animScript.AnimationSpeed = BlueGem_Sprites.Length - 8;
-        break;
-      case 2:
-        animScript.textureArray.AddRange(OrangeGem_Sprites);
-        animScript.AnimationSpeed = OrangeGem_Sprites.Length - 8;
-        break;
-      case 3:
-        animScript.textureArray.AddRange(GreenGem_Sprites);
-        animScript.AnimationSpeed = GreenGem_Sprites.Length - 8;
-        break;
-      case 4:
-        animScript.textureArray.AddRange(YellowGem_Sprites);
-        animScript.AnimationSpeed = YellowGem_Sprites.Length - 8;
-        break;
       case 5:
         animScript.textureArray.AddRange(Seven_Sprites);
         animScript.AnimationSpeed = Seven_Sprites.Length;
@@ -896,7 +878,7 @@ public class SlotBehaviour : MonoBehaviour
               }
             }
           }
-          if (resultnum <= 6)
+          if (resultnum >= 5 && resultnum <= 6)
           {
             PopulateBaseAnimationSprites(ResultMatrix[i].slotImages[j].GetComponent<ImageAnimation>(), resultnum);
           }
@@ -933,7 +915,7 @@ public class SlotBehaviour : MonoBehaviour
             {
               PopulateWinningsAnimationSprites(ResultMatrix[i].slotImages[j].transform.GetChild(0).GetComponent<ImageAnimation>(), resultNum);
             }
-            if (resultNum <= 6)
+            if (resultNum >= 5 && resultNum <= 6)
             {
               PopulateBaseAnimationSprites(ResultMatrix[i].slotImages[j].GetComponent<ImageAnimation>(), resultNum);
             }
@@ -1018,26 +1000,158 @@ public class SlotBehaviour : MonoBehaviour
     SetBalance(currentBalance - currentTotalBet, true);
   }
 
-  private void GeneratePayoutLines(IEnumerable<int> lineIds)
+  private IEnumerator PlayPayoutLine(Win win)
   {
-    foreach (int lineId in lineIds)
+    List<KeyValuePair<int, int>> coordinates = GetWinCoordinates(win);
+    if (coordinates.Count < 2) yield break;
+
+    PayCalculator.ResetLines();
+    FadeOutImages();
+    KeyValuePair<int, int> firstCoordinate = coordinates[0];
+    Sprite firstSprite = ResultMatrix[firstCoordinate.Key].slotImages[firstCoordinate.Value].sprite;
+    Color lineColor = GetPayoutLineColor(firstSprite);
+    List<Vector2> amountPositions = PayCalculator.CreateCurvedPath(GetWinAmountPositions(coordinates));
+    if (amountPositions.Count > 1)
+      StartCoroutine(PlayWinAmounts(win.amount, coordinates.Count, amountPositions, lineColor));
+
+    yield return PayCalculator.AnimatePayoutLineBackend(coordinates, SingleWinningLineDuration, lineColor, pointIndex =>
     {
-      if (!y_string.TryGetValue(lineId + 1, out string lineValue)) continue;
-      List<int> yPoints = lineValue.Split(',').Select(Int32.Parse).ToList();
-      PayCalculator.GeneratePayoutLinesBackend(yPoints, yPoints.Count);
+      KeyValuePair<int, int> coordinate = coordinates[pointIndex];
+      Image slotImage = ResultMatrix[coordinate.Key].slotImages[coordinate.Value];
+      slotImage.color = Color.white;
+      if (slotImage.sprite != myImages[7] && slotImage.transform.childCount > 0)
+        StartGameAnimation(slotImage.transform.GetChild(0));
+    });
+  }
+
+  private List<Vector2> GetWinAmountPositions(List<KeyValuePair<int, int>> coordinates)
+  {
+    List<Vector2> positions = new();
+    if (!WinAmountTextTemplate) return positions;
+
+    RectTransform amountContainer = WinAmountTextTemplate.rectTransform.parent as RectTransform;
+    Canvas amountCanvas = amountContainer ? amountContainer.GetComponentInParent<Canvas>() : null;
+    if (!amountContainer || !amountCanvas) return positions;
+
+    Camera amountCamera = amountCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : amountCanvas.worldCamera;
+    foreach (KeyValuePair<int, int> coordinate in coordinates)
+    {
+      Image slotImage = ResultMatrix[coordinate.Key].slotImages[coordinate.Value];
+      Canvas slotCanvas = slotImage.canvas;
+      Camera slotCamera = slotCanvas && slotCanvas.renderMode != RenderMode.ScreenSpaceOverlay ? slotCanvas.worldCamera : null;
+      Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(slotCamera, slotImage.rectTransform.position);
+      RectTransformUtility.ScreenPointToLocalPointInRectangle(amountContainer, screenPoint, amountCamera, out Vector2 localPoint);
+      positions.Add(localPoint);
     }
+
+    return positions;
+  }
+
+  private IEnumerator PlayWinAmounts(double amount, int repeatCount, List<Vector2> path, Color lineColor)
+  {
+    float moveSpeed = Mathf.Max(0.01f, WinAmountMoveSpeed);
+    float firstSegmentDistance = 0f;
+    int firstSegmentEnd = Mathf.Min(PayoutCalculation.CurveStepsPerSegment, path.Count - 1);
+    for (int i = 1; i <= firstSegmentEnd; i++)
+      firstSegmentDistance += Vector2.Distance(path[i - 1], path[i]);
+    float staggerDelay = firstSegmentDistance / moveSpeed;
+
+    for (int i = 0; i < repeatCount; i++)
+    {
+      StartCoroutine(AnimateWinAmount(amount, path, lineColor, moveSpeed));
+      if (i < repeatCount - 1)
+        yield return new WaitForSeconds(staggerDelay);
+    }
+
+  }
+
+  private float GetPathDistance(List<Vector2> path)
+  {
+    float distance = 0f;
+    for (int i = 1; i < path.Count; i++)
+      distance += Vector2.Distance(path[i - 1], path[i]);
+    return distance;
+  }
+
+  private IEnumerator AnimateWinAmount(double amount, List<Vector2> path, Color lineColor, float moveSpeed)
+  {
+    if (!WinAmountTextTemplate || path.Count < 2) yield break;
+
+    TMP_Text amountText = Instantiate(WinAmountTextTemplate, WinAmountTextTemplate.transform.parent);
+    amountText.gameObject.name = "Win Amount";
+    amountText.gameObject.SetActive(true);
+    amountText.raycastTarget = false;
+    amountText.text = amount.ToString("0.###");
+    lineColor.a = 1f;
+    amountText.color = lineColor;
+
+    RectTransform amountRect = amountText.rectTransform;
+    amountRect.anchoredPosition = path[0];
+    float totalDistance = GetPathDistance(path);
+    float distanceTravelled = 0f;
+
+    for (int segment = 1; segment < path.Count; segment++)
+    {
+      float segmentDistance = Vector2.Distance(path[segment - 1], path[segment]);
+      if (segmentDistance <= 0f) continue;
+
+      float segmentDuration = segmentDistance / moveSpeed;
+      float elapsed = 0f;
+      while (elapsed < segmentDuration)
+      {
+        elapsed += Time.deltaTime;
+        float segmentProgress = Mathf.Clamp01(elapsed / segmentDuration);
+        float totalProgress = totalDistance > 0f
+          ? (distanceTravelled + segmentDistance * segmentProgress) / totalDistance
+          : 1f;
+        amountRect.anchoredPosition = Vector2.Lerp(path[segment - 1], path[segment], segmentProgress);
+        lineColor.a = 1f - Mathf.Clamp01((totalProgress - 0.6f) / 0.4f);
+        amountText.color = lineColor;
+        yield return null;
+      }
+
+      distanceTravelled += segmentDistance;
+    }
+
+    Destroy(amountText.gameObject);
+  }
+
+  private Color GetPayoutLineColor(Sprite firstSprite)
+  {
+    switch (Array.IndexOf(myImages, firstSprite))
+    {
+      case 0: return new Color32(190, 75, 255, 255);  // Purple gem
+      case 1: return new Color32(35, 170, 255, 255);  // Blue gem
+      case 2: return new Color32(255, 95, 45, 255);   // Orange gem
+      case 3: return new Color32(65, 220, 105, 255);  // Green gem
+      case 4: return new Color32(255, 220, 45, 255);  // Yellow gem
+      case 5: return new Color32(255, 70, 70, 255);   // Seven
+      case 6: return new Color32(255, 185, 40, 255);  // Bar
+      case 7: return new Color32(255, 80, 220, 255);  // Rainbow
+      default: return Color.white;
+    }
+  }
+
+  private IEnumerator PlayPayoutLinesOnce(List<Win> wins)
+  {
+    foreach (Win win in wins)
+      yield return PlayPayoutLine(win);
+
+    PayCalculator.ResetLines();
   }
 
   private List<KeyValuePair<int, int>> GetWinCoordinates(Win win)
   {
     List<KeyValuePair<int, int>> coordinates = new();
     bool isRTL = win.direction == "RTL";
+    IEnumerable<int> orderedColumns = isRTL
+      ? win.positions.OrderByDescending(column => column)
+      : win.positions.OrderBy(column => column);
 
-    for (int i = 0; i < win.positions.Count; i++)
+    foreach (int columnIndex in orderedColumns)
     {
-      int linePosition = isRTL ? numberOfSlots - 1 - i : i;
-      int rowIndex = SocketManager.initialData.lines[win.line][linePosition];
-      coordinates.Add(new KeyValuePair<int, int>(rowIndex, win.positions[i]));
+      int rowIndex = SocketManager.initialData.lines[win.line][columnIndex];
+      coordinates.Add(new KeyValuePair<int, int>(rowIndex, columnIndex));
     }
 
     return coordinates;
@@ -1048,25 +1162,6 @@ public class SlotBehaviour : MonoBehaviour
     foreach (KeyValuePair<int, int> coordinate in coordinates)
     {
       ResultMatrix[coordinate.Key].slotImages[coordinate.Value].color = Color.white;
-    }
-  }
-
-  private IEnumerator CycleManualWinLines(List<Win> wins)
-  {
-    yield return new WaitForSeconds(AllWinningLinesDuration);
-
-    while (true)
-    {
-      foreach (Win win in wins)
-      {
-        PayCalculator.ResetLines();
-        yield return null;
-
-        FadeOutImages();
-        HighlightWinningSymbols(GetWinCoordinates(win));
-        GeneratePayoutLines(new[] { win.line });
-        yield return new WaitForSeconds(SingleWinningLineDuration);
-      }
     }
   }
 
@@ -1158,7 +1253,12 @@ public class SlotBehaviour : MonoBehaviour
 
       if (WinLines.Count > 0)
       {
-        GeneratePayoutLines(WinLines);
+        List<Win> payoutWins = isStarBurst && SBresponse != null
+          ? SBresponse.payload.wins
+          : SocketManager.resultData.payload.wins;
+        yield return PlayPayoutLinesOnce(payoutWins);
+        FadeOutImages();
+        HighlightWinningSymbols(coords);
       }
 
       bool CanPlayComboAnim;
@@ -1207,7 +1307,6 @@ public class SlotBehaviour : MonoBehaviour
 
       for (int i = 0; i < transforms.Count; i++)
       {
-        StartGameAnimation(transforms[i]);
         yield return new WaitForSeconds(0.2f);
 
         if (CanPlayComboAnim)
@@ -1266,11 +1365,6 @@ public class SlotBehaviour : MonoBehaviour
         }
       }
 
-      if (WinLines.Count > 1 && !IsAutoSpin && !isStarBurst)
-      {
-        if (ManualWinLineCycleCoroutine != null) StopCoroutine(ManualWinLineCycleCoroutine);
-        ManualWinLineCycleCoroutine = StartCoroutine(CycleManualWinLines(new List<Win>(SocketManager.resultData.payload.wins)));
-      }
     }
     else
     {
@@ -1326,6 +1420,8 @@ public class SlotBehaviour : MonoBehaviour
     if (LineBetPlus_Button) LineBetPlus_Button.interactable = toggle;
     if (TotalBetPlus_Button) TotalBetPlus_Button.interactable = toggle;
     if (MaxBet_Button) MaxBet_Button.interactable = toggle;
+    if (NormalSpinSpeed_Button) NormalSpinSpeed_Button.interactable = toggle;
+    if (FastSpinSpeed_Button) FastSpinSpeed_Button.interactable = toggle;
   }
 
   private void StartGameAnimation(Transform animObjects)
@@ -1432,11 +1528,6 @@ public class SlotBehaviour : MonoBehaviour
 
   internal void StopGameAnimation()
   {
-    if (ManualWinLineCycleCoroutine != null)
-    {
-      StopCoroutine(ManualWinLineCycleCoroutine);
-      ManualWinLineCycleCoroutine = null;
-    }
     if (PaylinesCoroutine != null)
     {
       StopCoroutine(PaylinesCoroutine);
