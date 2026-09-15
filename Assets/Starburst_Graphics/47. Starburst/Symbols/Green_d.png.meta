@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 991882aeced49ff4b9898ef022acb6b6
+guid: ecd16f8e362d291498d8948421f13d05
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9152765479952352783
-    second: Yellow_Diamond_0
+      213: 4966966155166140453
+    second: Green_d_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 2
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -139,23 +139,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Yellow_Diamond_0
+      name: Green_d_0
       rect:
         serializedVersion: 2
-        x: 30
-        y: 50
-        width: 186
-        height: 182
+        x: 12
+        y: 17
+        width: 222
+        height: 222
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1f97bf61a48daf080800000000000000
-      internalID: -9152765479952352783
+      spriteID: 528c01ae6653ee440800000000000000
+      internalID: 4966966155166140453
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Yellow_Diamond_0: -9152765479952352783
+      Green_d_0: 4966966155166140453
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

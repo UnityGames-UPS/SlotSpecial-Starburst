@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4354bed76972b8c4db6107783c37fb66
+guid: eab35e9d9732b5d448a3ae6732c43ac4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5000951136052879194
-    second: Red_Diamond_0
+      213: -1088178715171893384
+    second: Red_D_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 2
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Red_Diamond_0
+      name: Red_D_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 7
-        width: 248
-        height: 235
+        x: 0
+        y: 0
+        width: 250
+        height: 250
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a5f9483ef82f66540800000000000000
-      internalID: 5000951136052879194
+      spriteID: 87fc906593306e0f0800000000000000
+      internalID: -1088178715171893384
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Red_Diamond_0: 5000951136052879194
+      Red_D_0: -1088178715171893384
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
