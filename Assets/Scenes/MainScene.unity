@@ -332,7 +332,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &13217050
 RectTransform:
   m_ObjectHideFlags: 0
@@ -349,7 +349,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1034, y: 452}
+  m_AnchoredPosition: {x: 847, y: 452}
   m_SizeDelta: {x: 128, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &13217051
@@ -381,10 +381,10 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 358485763, guid: 84c2f939a39d54c1ba78e2a881453b8a, type: 3}
-    m_PressedSprite: {fileID: -936599730, guid: 84c2f939a39d54c1ba78e2a881453b8a, type: 3}
+    m_HighlightedSprite: {fileID: 1472910110881298801, guid: 0929ffe04a1939345813e509dd7270a3, type: 3}
+    m_PressedSprite: {fileID: -3420564015482211071, guid: 0929ffe04a1939345813e509dd7270a3, type: 3}
     m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 2005328930, guid: 84c2f939a39d54c1ba78e2a881453b8a, type: 3}
+    m_DisabledSprite: {fileID: -4063990325686448695, guid: 0929ffe04a1939345813e509dd7270a3, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -416,7 +416,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1446647376, guid: 84c2f939a39d54c1ba78e2a881453b8a, type: 3}
+  m_Sprite: {fileID: 5598396100729036691, guid: 0929ffe04a1939345813e509dd7270a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -8615,7 +8615,7 @@ MonoBehaviour:
   uiManager: {fileID: 377874625}
   RaycastBlocker: {fileID: 1843602287}
   bonusdata: []
-  testToken: 4fbf7cc30df04e55a8ce9f5b145ab379
+  testToken: 5d2c226ea2a24c1fb833331bae576387
   JSManager: {fileID: 2129569334}
 --- !u!1 &501201621
 GameObject:
