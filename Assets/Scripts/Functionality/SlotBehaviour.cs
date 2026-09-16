@@ -343,6 +343,15 @@ public class SlotBehaviour : MonoBehaviour
     CompareBalance();
   }
 
+    //Response to a gamble offer resolved on the host platform — sync balance and win amount back into Unity.
+  internal void UpdateGambleResult(double newBalance, double newWinAmount)
+  {
+    currentBalance = newBalance;
+    if (Balance_text) Balance_text.text = newBalance.ToString("F3");
+    if (TotalWin_text) TotalWin_text.text = newWinAmount.ToString("F3");
+    CompareBalance();
+  }
+
   private void CompareBalance()
   {
     // A push landing mid-spin carries the pre-spin balance; the pre-spin gate in
@@ -771,6 +780,11 @@ public class SlotBehaviour : MonoBehaviour
     {
       IsSpinning = false;
     }
+    if (SocketManager.resultData.payload.winAmount > 0)
+    {
+      if(!IsAutoSpin && !isStarBurst)
+        SocketManager.SendGambleOffer(SocketManager.resultData.payload.winAmount);
+    }
   }
 
   void CheckWinData(StarBurstResponse starBurstResponse = null)
@@ -1050,6 +1064,9 @@ public class SlotBehaviour : MonoBehaviour
   private IEnumerator PlayWinAmounts(double amount, int repeatCount, List<Vector2> path, Color lineColor)
   {
     float moveSpeed = Mathf.Max(0.01f, WinAmountMoveSpeed);
+    decimal amountPerSymbol = repeatCount > 0
+      ? decimal.Truncate((decimal)amount / repeatCount * 1000m) / 1000m
+      : 0m;
     float firstSegmentDistance = 0f;
     int firstSegmentEnd = Mathf.Min(PayoutCalculation.CurveStepsPerSegment, path.Count - 1);
     for (int i = 1; i <= firstSegmentEnd; i++)
@@ -1058,7 +1075,7 @@ public class SlotBehaviour : MonoBehaviour
 
     for (int i = 0; i < repeatCount; i++)
     {
-      StartCoroutine(AnimateWinAmount(amount, path, lineColor, moveSpeed));
+      StartCoroutine(AnimateWinAmount((double)amountPerSymbol, path, lineColor, moveSpeed));
       if (i < repeatCount - 1)
         yield return new WaitForSeconds(staggerDelay);
     }
@@ -1081,7 +1098,7 @@ public class SlotBehaviour : MonoBehaviour
     amountText.gameObject.name = "Win Amount";
     amountText.gameObject.SetActive(true);
     amountText.raycastTarget = false;
-    amountText.text = amount.ToString("0.###");
+    amountText.text = amount.ToString("0.000");
     lineColor.a = 1f;
     amountText.color = lineColor;
 
