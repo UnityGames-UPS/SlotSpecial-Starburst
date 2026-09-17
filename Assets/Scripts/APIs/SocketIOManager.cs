@@ -173,7 +173,6 @@ public class SocketIOManager : MonoBehaviour
     gameSocket.On<string>("pong", OnPongReceived);
     gameSocket.On<string>("AnotherDevice", OnSocketOtherDevice);
     gameSocket.On<string>("balance:sync", OnBalanceSync);
-    gameSocket.On<string>("gamble:result", OnGambleResult);
 
     manager.Open();
   }
@@ -246,25 +245,6 @@ public class SocketIOManager : MonoBehaviour
     playerdata.balance = syncPayload.balance;
 
     slotManager.UpdateBalanceDisplay(syncPayload.balance);
-  }
-
-  //Response to SendGambleOffer — host platform reports the gamble result after rendering its own UI.
-  private void OnGambleResult(string data)
-  {
-    Debug.Log("Gamble Result Event: " + data);
-    GambleResultPayload gambleResult = JsonConvert.DeserializeObject<GambleResultPayload>(data);
-    if (gambleResult == null) return;
-
-    if (!gambleResult.success)
-    {
-      Debug.LogError("Gamble result failed: " + data);
-      return;
-    }
-
-    if (playerdata == null) playerdata = new Player();
-    playerdata.balance = gambleResult.balance;
-
-    slotManager.UpdateGambleResult(gambleResult.balance, gambleResult.winAmount);
   }
 
   // Driven exclusively by the WebGL/JS OnFocusChanged path — never by OnApplicationFocus,
@@ -523,19 +503,6 @@ public class SocketIOManager : MonoBehaviour
     return stringList;
   }
 
-    internal void SendGambleOffer(double win)
-  {
-    GambleOffer gambleOffer = new()
-    {
-      type = "GAMBLE_OFFER",
-      payload = new GamblePayload
-      {
-        winning = win
-      }
-    };
-    SendDataWithNamespace("request", JsonUtility.ToJson(gambleOffer));
-  }
-
   private List<string> ConvertListListIntToListString(List<List<int>> listOfLists)
   {
     List<string> resultList = new List<string>();
@@ -591,19 +558,6 @@ public class SocketIOManager : MonoBehaviour
 
     return transformedList;
   }
-}
-
-[Serializable]
-public class GambleOffer
-{
-  public string type = "GAMBLE_OFFER";
-  public GamblePayload payload;
-}
-
-[Serializable]
-public class GamblePayload
-{
-  public double winning;
 }
 
 [Serializable]
@@ -710,14 +664,6 @@ public class Player
 public class BalanceSyncPayload
 {
   public double balance;
-}
-
-[Serializable]
-public class GambleResultPayload
-{
-  public bool success;
-  public double balance;
-  public double winAmount;
 }
 
 [Serializable]

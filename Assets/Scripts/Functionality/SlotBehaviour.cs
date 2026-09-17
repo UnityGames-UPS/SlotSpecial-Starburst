@@ -780,11 +780,6 @@ public class SlotBehaviour : MonoBehaviour
     {
       IsSpinning = false;
     }
-    if (SocketManager.resultData.payload.winAmount > 0)
-    {
-      if(!IsAutoSpin && !isStarBurst)
-        SocketManager.SendGambleOffer(SocketManager.resultData.payload.winAmount);
-    }
   }
 
   void CheckWinData(StarBurstResponse starBurstResponse = null)
