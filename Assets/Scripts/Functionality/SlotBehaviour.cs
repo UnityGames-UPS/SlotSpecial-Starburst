@@ -343,15 +343,6 @@ public class SlotBehaviour : MonoBehaviour
     CompareBalance();
   }
 
-    //Response to a gamble offer resolved on the host platform — sync balance and win amount back into Unity.
-  internal void UpdateGambleResult(double newBalance, double newWinAmount)
-  {
-    currentBalance = newBalance;
-    if (Balance_text) Balance_text.text = newBalance.ToString("F3");
-    if (TotalWin_text) TotalWin_text.text = newWinAmount.ToString("F3");
-    CompareBalance();
-  }
-
   private void CompareBalance()
   {
     // A push landing mid-spin carries the pre-spin balance; the pre-spin gate in
